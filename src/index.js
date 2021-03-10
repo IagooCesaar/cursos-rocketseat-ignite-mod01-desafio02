@@ -42,9 +42,21 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  checksExistsUserAccount(request, response, next);
-  const { user } = request;
+  const { username } = request.headers;
   const { id } = request.params;
+
+  if (!username) {
+    return response.status(400).json({
+      error: "You must provide a valid username",
+    });
+  }
+
+  const user = users.find((user) => user.username === username);
+  if (!user) {
+    return response.status(404).json({
+      error: "Username not found",
+    });
+  }
 
   if (!validate(id)) {
     return response.status(400).json({
@@ -53,6 +65,13 @@ function checksTodoExists(request, response, next) {
   }
 
   const todo = user.todos.find((todo) => todo.id === id);
+  if (!todo) {
+    return response.status(404).json({
+      error: "Todo not found",
+    });
+  }
+
+  request.user = user;
   request.todo = todo;
   next();
 }
