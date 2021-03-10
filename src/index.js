@@ -90,6 +90,9 @@ function findUserById(request, response, next) {
       error: "User ID not found",
     });
   }
+
+  request.user = user;
+  next();
 }
 
 app.post("/users", (request, response) => {
