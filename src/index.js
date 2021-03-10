@@ -42,11 +42,35 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  checksExistsUserAccount(request, response, next);
+  const { user } = request;
+  const { id } = request.params;
+
+  if (!validate(id)) {
+    return response.status(400).json({
+      error: "Id is not a valid uuid",
+    });
+  }
+
+  const todo = user.todos.find((todo) => todo.id === id);
+  request.todo = todo;
+  next();
 }
 
 function findUserById(request, response, next) {
-  // Complete aqui
+  const { id } = request.params;
+  if (!validate(id)) {
+    return response.status(400).json({
+      error: "ID is not a valid uuid",
+    });
+  }
+
+  const user = users.find((user) => user.id === id);
+  if (!user) {
+    return response.status(404).json({
+      error: "User ID not found",
+    });
+  }
 }
 
 app.post("/users", (request, response) => {
